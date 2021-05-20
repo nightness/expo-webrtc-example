@@ -1,9 +1,10 @@
 # expo-webrtc-example
 WebRTC support for Expo using WebView's? (Experimental)
 
-### __Idea behind__
+### __Motivation behind__
 Getting WebRTC to Expo without ejecting out of Expo
 
+### __Status___
 The Expo web platform works... I'm working on getting Expo Go to support it (if possible). Native builds are untested.
 
 ### __Note about WebRTC.html__
