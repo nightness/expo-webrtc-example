@@ -309,7 +309,6 @@ export default () => {
                 allowsFullscreenVideo={true}
                 allowsInlineMediaPlayback={true}
                 androidLayerType={'hardware'}
-                a
                 bounces={false}
                 mediaPlaybackRequiresUserAction={false}
                 // source={{ uri: 'file:///android_asset/WebRTC.html' }} // For Android, but problem... With Expo Go, it's Expo Go's asset folder
