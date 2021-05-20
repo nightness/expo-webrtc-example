@@ -3,7 +3,7 @@ import { Platform, View } from 'react-native'
 // @ts-expect-error
 import { WebView as WebViewWeb } from 'react-native-web-webview'
 import { WebView as WebViewNative, WebViewProps } from 'react-native-webview'
-import { WebViewErrorEvent } from 'react-native-webview/lib/WebViewTypes'
+import { WebViewErrorEvent, WebViewNavigationEvent } from 'react-native-webview/lib/WebViewTypes'
 
 const html = Platform.OS === 'web' ? require('./assets/WebRTC.html') : `
 <!-- 
@@ -268,6 +268,16 @@ export default () => {
         console.info(`WebView is${isLoading ? ' ' : ' not '}loading`)
     }, [isLoading])
 
+    const onLoad = ({ target }: { target: HTMLIFrameElement }) => {
+        console.log('onLoad')
+        setWebView(target)
+        setDocument(target.contentDocument ? target.contentDocument : undefined)
+    }
+
+    const onError = ({ nativeEvent }: WebViewErrorEvent) => {
+        console.error(`WebView Error: ${nativeEvent.description}`)
+    }
+
     // Web Platform
     if (Platform.OS === 'web')
         return (
@@ -282,13 +292,8 @@ export default () => {
                     bounces={false}
                     mediaPlaybackRequiresUserAction={false}
                     source={{ html }}
-                    onError={({ nativeEvent }: WebViewErrorEvent) => {
-                        console.error(`WebView Error: ${nativeEvent.description}`)
-                    }}
-                    onLoad={({ target }: { target: HTMLIFrameElement }) => {
-                        setWebView(target)
-                        setDocument(target.contentDocument ? target.contentDocument : undefined)
-                    }}
+                    onError={onError}
+                    onLoad={onLoad}
                 />
             </View>
         )
@@ -304,19 +309,18 @@ export default () => {
                 allowsFullscreenVideo={true}
                 allowsInlineMediaPlayback={true}
                 androidLayerType={'hardware'}
+                a
                 bounces={false}
                 mediaPlaybackRequiresUserAction={false}
                 // source={{ uri: 'file:///android_asset/WebRTC.html' }} // For Android, but problem... With Expo Go, it's Expo Go's asset folder
-                //source={{ uri: 'https://cloud-lightning.web.app/WebRTC.html' }}
-                source={{ html }}
-                onError={({ nativeEvent }) => {
-                    console.error(`WebView Error: ${nativeEvent.description}`)
+                source={{ uri: 'https://cloud-lightning.web.app/WebRTC.html', baseUrl:'' }}
+                //source={{ html }}
+                onError={onError}
+                onLoad={({ currentTarget }) => {
+                    console.log(currentTarget)
                 }}
-                onLoad={({ target }) => {
-                    // @ts-expect-error
-                    const webViewTarget = target as HTMLIFrameElement
-                    setWebView(webViewTarget)
-                    setDocument(webViewTarget.contentDocument ? webViewTarget.contentDocument : undefined)
+                onMessage={({ nativeEvent }) => {
+                    console.log(`onMessage: ${nativeEvent.data}`)
                 }}
             />
 
