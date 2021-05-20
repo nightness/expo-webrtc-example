@@ -5,7 +5,7 @@ import { WebView as WebViewWeb } from 'react-native-web-webview'
 import { WebView as WebViewNative, WebViewProps } from 'react-native-webview'
 import { WebViewErrorEvent } from 'react-native-webview/lib/WebViewTypes'
 
-const html = Platform.OS === 'web' ? require('./WebRTC.html') : ''
+const html = Platform.OS === 'web' ? require('./assets/WebRTC.html') : ''
 
 // App Component
 export default () => {
@@ -59,8 +59,10 @@ export default () => {
                 allowsBackForwardNavigationGestures={false}
                 allowsFullscreenVideo={true}
                 allowsInlineMediaPlayback={true}
+                androidLayerType={'hardware'}
                 bounces={false}
                 mediaPlaybackRequiresUserAction={false}
+                // source={{ uri: 'file:///android_asset/WebRTC.html' }} // For Android, but problem... With Expo Go, it's Expo Go's asset folder
                 source={{ uri: 'https://cloud-lightning.web.app/WebRTC.html' }}
                 onError={({ nativeEvent }) => {
                     console.error(`WebView Error: ${nativeEvent.description}`)
