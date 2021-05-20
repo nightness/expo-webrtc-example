@@ -1,7 +1,7 @@
 # expo-webrtc-example
 WebRTC support for Expo using WebView's? (Experimental)
 
-### __Motivation behind__
+### __Motivation Behind__
 Getting WebRTC to Expo without ejecting out of Expo
 
 ### __Status__
