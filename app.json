@@ -1,9 +1,9 @@
 {
-  "name": "example",
-  "displayName": "example",
+  "name": "expo-webrtc-example",
+  "displayName": "expo-webrtc-example",
   "expo": {
-    "name": "example",
-    "slug": "example",
+    "name": "expo-webrtc-example",
+    "slug": "expo-webrtc-example",
     "version": "1.0.0",
     "assetBundlePatterns": [
       "**/*"

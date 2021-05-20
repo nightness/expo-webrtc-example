@@ -1,19 +1,79 @@
-import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import React, { useEffect, useState } from 'react'
+import { Platform, View } from 'react-native'
+// @ts-expect-error
+import { WebView as WebViewWeb } from 'react-native-web-webview'
+import { WebView as WebViewNative, WebViewProps } from 'react-native-webview'
+import { WebViewErrorEvent } from 'react-native-webview/lib/WebViewTypes'
 
-export default function App() {
-  return (
-    <View style={styles.container}>
-      <Text>Open up App.tsx to start working on your app!</Text>
-    </View>
-  );
+const html = Platform.OS === 'web' ? require('./WebRTC.html') : ''
+
+// App Component
+export default () => {
+    const [isLoading, setIsLoading] = useState(true)
+    const [webView, setWebView] = useState<HTMLIFrameElement>()
+    const [document, setDocument] = useState<Document>()
+
+    useEffect(() => {
+        if (webView !== undefined) {
+            setIsLoading(false)
+            console.log(document)
+        }
+    }, [webView])
+
+    useEffect(() => {
+        console.info(`WebView is${isLoading ? ' ' : ' not '}loading`)
+    }, [isLoading])
+
+    // Web Platform
+    if (Platform.OS === 'web')
+        return (
+            <View style={{ flex: 1 }}>
+                <WebViewWeb
+                    style={{ flex: 1 }}
+                    originWhitelist={['*']}
+                    allowUniversalAccessFromFileURLs={true}
+                    allowsBackForwardNavigationGestures={false}
+                    allowsFullscreenVideo={true}
+                    allowsInlineMediaPlayback={true}
+                    bounces={false}
+                    mediaPlaybackRequiresUserAction={false}
+                    source={{ html }}
+                    onError={({ nativeEvent }: WebViewErrorEvent) => {
+                        console.error(`WebView Error: ${nativeEvent.description}`)
+                    }}
+                    onLoad={({ target }: { target: HTMLIFrameElement }) => {
+                        setWebView(target)
+                        setDocument(target.contentDocument ? target.contentDocument : undefined)
+                    }}
+                />
+            </View>
+        )
+
+    // Native WebView's
+    return (
+        <View style={{ flex: 1 }}>
+            <WebViewNative
+                style={{ flex: 1 }}
+                originWhitelist={['*']}
+                allowUniversalAccessFromFileURLs={true}
+                allowsBackForwardNavigationGestures={false}
+                allowsFullscreenVideo={true}
+                allowsInlineMediaPlayback={true}
+                bounces={false}
+                mediaPlaybackRequiresUserAction={false}
+                source={{ uri: 'https://cloud-lightning.web.app/WebRTC.html' }}
+                onError={({ nativeEvent }) => {
+                    console.error(`WebView Error: ${nativeEvent.description}`)
+                }}
+                onLoad={({ target }) => {
+                    // @ts-expect-error
+                    const webViewTarget = target as HTMLIFrameElement
+                    setWebView(webViewTarget)
+                    setDocument(webViewTarget.contentDocument ? webViewTarget.contentDocument : undefined)
+                }}
+            />
+
+        </View>
+    )
+
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
