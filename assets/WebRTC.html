@@ -199,11 +199,10 @@
                         if (change.type === 'added') {
                             const candidate = new RTCIceCandidate(change.doc.data())
                             pc.addIceCandidate(candidate)
+                            hangupButton.disabled = false
                         }
                     })
                 })
-
-                hangupButton.disabled = false
             }
 
             // 3. Answer the call with the unique ID
