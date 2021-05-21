@@ -1,11 +1,10 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useCallback } from 'react'
 import { AppRegistry, ComponentProvider, Platform, View } from 'react-native'
 // @ts-expect-error
 import { WebView as WebViewWeb } from 'react-native-web-webview'
 import { WebView as WebViewNative, WebViewProps } from 'react-native-webview'
 import { WebViewErrorEvent, WebViewNavigationEvent } from 'react-native-webview/lib/WebViewTypes'
 // import RNPermissionsModule, { requestMultiple, PERMISSIONS } from 'react-native-permissions'
-import { Camera } from 'expo-camera'
 
 const html = Platform.OS === 'web' ? require('./assets/WebRTC.html') : `
 <!-- 
@@ -268,16 +267,18 @@ export default () => {
     useEffect(() => {
         if (webView !== undefined) {
             setIsLoading(false)
-            console.log(document)
+            //console.log(document)
+            webView.allowFullscreen = true
+            webView.requestFullscreen().catch((error) => console.error(error))
         }
     }, [webView])
 
-    useEffect(() => {
-        Camera.requestPermissionsAsync().catch((err) => {
-            console.log('---------------------------------------')
-            console.error(err)
-        })
-    }, [])
+    // useEffect(() => {
+    //     Camera.requestPermissionsAsync().catch((err) => {
+    //         console.log('---------------------------------------')
+    //         console.error(err)
+    //     })
+    // }, [])
 
     //
     //  This will probably not work with Expo Go
