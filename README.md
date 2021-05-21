@@ -2,7 +2,7 @@
 WebRTC support for Expo using WebView's? (Experimental)
 
 ### __Motivation Behind__
-Getting WebRTC to Expo without ejecting out of Expo
+Getting WebRTC to work with Expo Go and Expo Web without ejecting out of Expo.
 
 ### __Status__
 Expo Web and Expo Go for iOS works... I'm working on getting Android's Expo Go to support it (if possible). Native builds are untested.
