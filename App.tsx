@@ -7,7 +7,7 @@ import { WebViewErrorEvent, WebViewNavigationEvent } from 'react-native-webview/
 // import RNPermissionsModule, { requestMultiple, PERMISSIONS } from 'react-native-permissions'
 import { Camera } from 'expo-camera'
 
-const html = `
+const html = Platform.OS === 'web' ? require('./assets/WebRTC.html') : `
 <!-- 
 
     Using as proof of concept, for using WebView to have WebRTC support in Expo apps
@@ -134,8 +134,6 @@ const html = `
                     video: true,
                     audio: true,
                 })
-
-                alert('123')
 
                 navigator.mediaDevices
                     .getUserMedia({
