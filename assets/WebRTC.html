@@ -237,11 +237,10 @@
                         if (change.type === 'added') {
                             let data = change.doc.data()
                             pc.addIceCandidate(new RTCIceCandidate(data))                            
+                            hangupButton.disabled = false
                         }
                     })
                 })
-
-                hangupButton.disabled = false
             }
 
             hangupButton.onclick = async () => {
