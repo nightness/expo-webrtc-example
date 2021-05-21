@@ -20,7 +20,7 @@
     "react-native-unimodules": "~0.13.3",
     "react-native-web": "~0.13.12",
     "react-native-web-webview": "^1.0.2",
-    "react-native-webview": "11.2.3"
+    "react-native-webview": "^11.6.1"
   },
   "devDependencies": {
     "@babel/core": "^7.9.0",

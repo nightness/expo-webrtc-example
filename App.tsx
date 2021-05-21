@@ -128,6 +128,13 @@ const html = Platform.OS === 'web' ? require('./assets/WebRTC.html') : `
 
             // 1. Setup media sources
             webcamButton.onclick = async () => {
+                await navigator.mediaDevices.getUserMedia({
+                    video: true,
+                    audio: true,
+                })
+
+                alert('123')
+
                 navigator.mediaDevices
                     .getUserMedia({
                         video: true,
@@ -157,7 +164,8 @@ const html = Platform.OS === 'web' ? require('./assets/WebRTC.html') : `
                         callButton.disabled = false
                         answerButton.disabled = false
                         webcamButton.disabled = true
-                    }).catch((exception) => {
+                    })
+                    .catch((exception) => {
                         alert(exception)
                     })
             }
@@ -298,6 +306,12 @@ export default () => {
             </View>
         )
 
+    // Sources...
+    // const source = { html }
+    const source = { uri: 'https://cloud-lightning.web.app/WebRTC.html', baseUrl: '' }
+    // const source = { uri: 'file:///android_asset/WebRTC.html' } // For Android, but problem... With Expo Go, it's Expo Go's asset folder
+    // const source = { uri: 'https://cloud-lightning.web.app/WebRTC.html', baseUrl: 'https://cloud-lightning.web.app' }
+
     // Native WebView's
     return (
         <View style={{ flex: 1 }}>
@@ -308,18 +322,30 @@ export default () => {
                 allowsBackForwardNavigationGestures={false}
                 allowsFullscreenVideo={true}
                 allowsInlineMediaPlayback={true}
-                androidLayerType={'hardware'}
+                androidLayerType={'software'}
                 bounces={false}
                 mediaPlaybackRequiresUserAction={false}
-                // source={{ uri: 'file:///android_asset/WebRTC.html' }} // For Android, but problem... With Expo Go, it's Expo Go's asset folder
-                source={{ uri: 'https://cloud-lightning.web.app/WebRTC.html', baseUrl:'' }}
-                //source={{ html }}
+                source={source}
                 onError={onError}
                 onLoad={({ currentTarget }) => {
-                    console.log(currentTarget)
+                    console.log('onLoad')
                 }}
                 onMessage={({ nativeEvent }) => {
                     console.log(`onMessage: ${nativeEvent.data}`)
+                }}
+                onShouldStartLoadWithRequest={(request) => {
+                    console.log(request)
+                    return true
+                }}
+                onHttpError={({ nativeEvent }) => {
+                    console.error(nativeEvent.description)
+                }}
+                onNavigationStateChange={({ loading, navigationType, url, mainDocumentURL }) => {
+                    console.log(url + ' ' + loading)
+                    console.log(url + ' ' + loading)
+                }}
+                onLoadProgress={({ nativeEvent }) => {
+                    console.log(nativeEvent.progress)
                 }}
             />
 
