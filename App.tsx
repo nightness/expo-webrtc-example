@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from 'react'
-import { Platform, View } from 'react-native'
+import { AppRegistry, ComponentProvider, Platform, View } from 'react-native'
 // @ts-expect-error
 import { WebView as WebViewWeb } from 'react-native-web-webview'
 import { WebView as WebViewNative, WebViewProps } from 'react-native-webview'
 import { WebViewErrorEvent, WebViewNavigationEvent } from 'react-native-webview/lib/WebViewTypes'
+// import RNPermissionsModule, { requestMultiple, PERMISSIONS } from 'react-native-permissions'
+import { Camera } from 'expo-camera'
 
-const html = Platform.OS === 'web' ? require('./assets/WebRTC.html') : `
+const html = `
 <!-- 
 
     Using as proof of concept, for using WebView to have WebRTC support in Expo apps
@@ -273,6 +275,21 @@ export default () => {
     }, [webView])
 
     useEffect(() => {
+        Camera.requestPermissionsAsync().catch((err) => {
+            console.log('---------------------------------------')
+            console.error(err)
+        })
+    }, [])
+
+    // useEffect(() => {        
+    //     const effect = async () => {
+    //         await requestMultiple([PERMISSIONS.ANDROID.CAMERA, PERMISSIONS.ANDROID.RECORD_AUDIO]);
+    //     };
+
+    //     effect().catch(console.log);
+    // }, []);
+
+    useEffect(() => {
         console.info(`WebView is${isLoading ? ' ' : ' not '}loading`)
     }, [isLoading])
 
@@ -307,8 +324,8 @@ export default () => {
         )
 
     // Sources...
-    // const source = { html }
-    const source = { uri: 'https://cloud-lightning.web.app/WebRTC.html', baseUrl: '' }
+    const source = { html }
+    // const source = { uri: 'https://cloud-lightning.web.app/WebRTC.html', baseUrl: '' }
     // const source = { uri: 'file:///android_asset/WebRTC.html' } // For Android, but problem... With Expo Go, it's Expo Go's asset folder
     // const source = { uri: 'https://cloud-lightning.web.app/WebRTC.html', baseUrl: 'https://cloud-lightning.web.app' }
 
