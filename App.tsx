@@ -81,6 +81,7 @@ const html = Platform.OS === 'web' ? require('./assets/WebRTC.html') : `
         <!-- Add Firebase products that you want to use -->
         <script src="https://www.gstatic.com/firebasejs/8.6.1/firebase-auth.js"></script>
         <script src="https://www.gstatic.com/firebasejs/8.6.1/firebase-firestore.js"></script>
+        <script src="https://www.gstatic.com/firebasejs/8.6.1/firebase-functions.js"></script>
 
         <script type="module">
             // Use your own config please, mine is write protected anyways
@@ -100,6 +101,7 @@ const html = Platform.OS === 'web' ? require('./assets/WebRTC.html') : `
                 firebase.initializeApp(firebaseConfig)
             }
             const firestore = firebase.firestore()
+            const functions = firebase.functions()
 
             const servers = {
                 iceServers: [
@@ -129,11 +131,6 @@ const html = Platform.OS === 'web' ? require('./assets/WebRTC.html') : `
 
             // 1. Setup media sources
             webcamButton.onclick = async () => {
-                await navigator.mediaDevices.getUserMedia({
-                    video: true,
-                    audio: true,
-                })
-
                 navigator.mediaDevices
                     .getUserMedia({
                         video: true,
@@ -143,6 +140,10 @@ const html = Platform.OS === 'web' ? require('./assets/WebRTC.html') : `
                         localStream = stream
                         remoteStream = new MediaStream()
 
+                        // Mute the webcamVideo
+                        webcamVideo.muted = true
+
+                        // Mute localStream
                         const tracks = localStream.getTracks()
 
                         // Push tracks from local stream to peer connection
@@ -187,12 +188,13 @@ const html = Platform.OS === 'web' ? require('./assets/WebRTC.html') : `
                 const offerDescription = await pc.createOffer()
                 await pc.setLocalDescription(offerDescription)
 
+                // TODO: Add the target of the call to the offer
                 const offer = {
                     sdp: offerDescription.sdp,
                     type: offerDescription.type,
                 }
 
-                await callDoc.set({ offer })
+                await functions.httpsCallable('createCall')({ offer })
 
                 // Listen for remote answer
                 callDoc.onSnapshot((snapshot) => {
@@ -209,11 +211,10 @@ const html = Platform.OS === 'web' ? require('./assets/WebRTC.html') : `
                         if (change.type === 'added') {
                             const candidate = new RTCIceCandidate(change.doc.data())
                             pc.addIceCandidate(candidate)
+                            hangupButton.disabled = false
                         }
                     })
                 })
-
-                hangupButton.disabled = false
             }
 
             // 3. Answer the call with the unique ID
@@ -253,6 +254,26 @@ const html = Platform.OS === 'web' ? require('./assets/WebRTC.html') : `
                     })
                 })
             }
+
+            hangupButton.onclick = async () => {
+                const tracks = webcamVideo.srcObject.getTracks()
+                tracks.forEach((track) => {
+                    track.stop()
+                })
+
+                if (remoteStream)
+                    remoteStream.getTracks().forEach((track) => track.stop())
+
+                // This stops my stream to the senders, but doesn't not stop me from seeing them
+                const senders = pc.getSenders()
+                senders.forEach((sender) => {
+                    //pc.removeTrack(sender)
+                })
+
+                // Close the entire connection
+                pc.close()
+                hangupButton.disabled = true
+            }
         </script>
     </body>
 </html>
@@ -264,14 +285,14 @@ export default () => {
     const [webView, setWebView] = useState<HTMLIFrameElement>()
     const [document, setDocument] = useState<Document>()
 
-    useEffect(() => {
-        if (webView !== undefined) {
-            setIsLoading(false)
-            //console.log(document)
-            webView.allowFullscreen = true
-            webView.requestFullscreen().catch((error) => console.error(error))
-        }
-    }, [webView])
+    // useEffect(() => {
+    //     if (webView !== undefined) {
+    //         setIsLoading(false)
+    //         //console.log(document)
+    //         webView.allowFullscreen = true
+    //         webView.requestFullscreen().catch((error) => console.error(error))
+    //     }
+    // }, [webView])
 
     // useEffect(() => {
     //     Camera.requestPermissionsAsync().catch((err) => {
