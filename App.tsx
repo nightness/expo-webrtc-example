@@ -347,10 +347,11 @@ export default () => {
         )
 
     // Sources...
-    // const source = { html }
+    // const source = { html, baseUrl: '' }
     const source = { uri: 'https://cloud-lightning.web.app/WebRTC.html', baseUrl: '' }
     // const source = { uri: 'file:///android_asset/WebRTC.html' } // For Android, but problem... With Expo Go, it's Expo Go's asset folder
     // const source = { uri: 'https://cloud-lightning.web.app/WebRTC.html', baseUrl: 'https://cloud-lightning.web.app' }
+
 
     // Native WebView's
     return (
@@ -362,7 +363,7 @@ export default () => {
                 allowsBackForwardNavigationGestures={false}
                 allowsFullscreenVideo={true}
                 allowsInlineMediaPlayback={true}
-                androidLayerType={'software'}
+                androidLayerType={'hardware'}
                 bounces={false}
                 mediaPlaybackRequiresUserAction={false}
                 source={source}

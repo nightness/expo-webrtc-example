@@ -93,6 +93,7 @@
             }
             const firestore = firebase.firestore()
             const functions = firebase.functions()
+            const auth = firebase.auth()
 
             const servers = {
                 iceServers: [
@@ -163,12 +164,21 @@
 
             // 2. Create an offer
             callButton.onclick = async () => {
+                // Prevent double taps, second clicks
+                callButton.disabled = true
+
+                // Create a new call
+                const { data: call } = await functions.httpsCallable('createCall')({ target: auth.currentUser.uid })
+                
+                if (call === undefined || call.id === undefined) {
+                    alert("Unable to create call")
+                    return
+                }
+
                 // Reference Firestore collections for signaling
-                const callDoc = firestore.collection('calls').doc()
+                const callDoc = firestore.collection('calls').doc(call.id)
                 const offerCandidates = callDoc.collection('offerCandidates')
                 const answerCandidates = callDoc.collection('answerCandidates')
-
-                callInput.value = callDoc.id
 
                 // Get candidates for caller, save to db
                 pc.onicecandidate = (event) => {
@@ -185,7 +195,10 @@
                     type: offerDescription.type,
                 }
 
-                await functions.httpsCallable('createCall')({ offer })
+                await functions.httpsCallable('setCallOffer')({ id: call.id, offer })
+
+                // Call is ready to be answered
+                callInput.value = call.id
 
                 // Listen for remote answer
                 callDoc.onSnapshot((snapshot) => {
@@ -219,10 +232,8 @@
                     event.candidate && answerCandidates.add(event.candidate.toJSON())
                 }
 
-                const callData = (await callDoc.get()).data()
-
-                const offerDescription = callData.offer
-                await pc.setRemoteDescription(new RTCSessionDescription(offerDescription))
+                const { offer } = (await callDoc.get()).data()
+                await pc.setRemoteDescription(new RTCSessionDescription(offer))
 
                 const answerDescription = await pc.createAnswer()
                 await pc.setLocalDescription(answerDescription)

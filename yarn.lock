@@ -6888,6 +6888,14 @@ react-native-web@~0.13.12:
     prop-types "^15.6.0"
     react-timer-mixin "^0.13.4"
 
+react-native-webview-android@^1.1.17:
+  version "1.1.17"
+  resolved "https://registry.yarnpkg.com/react-native-webview-android/-/react-native-webview-android-1.1.17.tgz#44c558bd9fdd3ad1af0494c37913126fc2c7bd13"
+  integrity sha512-kP2Hi/fL2MY6L7EgTDHOQg6feRSJiia6Uc44V//ydNlYSdjgqpM2sm4GFd+sPIlbRKen5y/h8JvoJHWyQtwosw==
+  dependencies:
+    create-react-class "^15.6.2"
+    prop-types "^15.6.0"
+
 react-native-webview@11.4.5:
   version "11.4.5"
   resolved "https://registry.yarnpkg.com/react-native-webview/-/react-native-webview-11.4.5.tgz#a264ac2f9146b23b10dcea1a12b9ce3ec0df9db8"
